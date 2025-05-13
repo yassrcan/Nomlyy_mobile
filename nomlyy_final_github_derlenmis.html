@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nomlyy.app</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fffbe7, #fff0c2);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background-color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #eee;
+    }
+    .logo {
+      height: 40px;
+      background-color: white;
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    }
+    button {
+      background: linear-gradient(to right, #f2709c, #ff9472);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    button:hover {
+      background: linear-gradient(to right, #ff9472, #f2709c);
+      transform: scale(1.03);
+    }
+    #tarifLink {
+      background: #fff9ec;
+      padding: 1rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="site-title">nomlyy</div>
+  <img class="logo" src="logo.png" alt="Nomlyy Logo">
+</header>
+
+<main>
+  <h1>Bugün Ne Yesem? Sorusunun En Hızlı Cevabı</h1>
+  <p>Üstelik tüm öneri ve tariflerle :)</p>
+  <div class="button-container">
+    <button onclick="eliminLezzeti()">Elimin lezzetiyle bir şeyler yapmak istiyorum!</button>
+    <button onclick="disaridanSoyle()">Bugün miskinim, dışarıdan söylesem iyi olur!</button>
+  </div>
+  <div id="kisiSayisiInput" style="display: none; margin-top: 1rem;">
+    <p>Bu yemeği kaç şanslı kişiye yapacaksın?</p>
+    <select id="kisiSecimi">
+      <option value="1">Yalnız ve gururlu (Tek kişilik dev kadro)</option>
+      <option value="2-4">Bizimkiler geldi (2-4 kişilik)</option>
+      <option value="4-6">Maaile (Yengem/Görümcem de var) (4-6 kişilik)</option>
+      <option value="6+">İnsan ağırlamayı severim! (6+)</option>
+    </select>
+    <button id="sonKararButton" onclick="sonKararVer()">Son kararım!</button>
+  </div>
+  <div id="onerilenYemek"></div>
+  <div id="tarifLink"></div>
+</main>
+
+<footer style="margin-top: 3rem; text-align: center; padding: 1rem; font-size: 0.9rem;">
+  <span>Hakkında • İletişim • Sosyal Medya</span>
+</footer>
+
+<script>
+  const yemeklerEv = ["Menemen", "Karnıyarık", "Ispanak Yemeği"];
+  const yemeklerDis = ["Lahmacun", "Pizza", "Burger", "Sushi", "Tavuk Döner", "Kızarmış Tavuk"];
+
+  const tarifMetinleri = {
+    "Menemen": {
+      "1": "<strong>Malzemeler:</strong> 2 domates, 2 yumurta, 1 biber, 1 yemek kaşığı zeytinyağı.<br><strong>Yapılışı:</strong> Domates ve biberi doğrayıp tavada kavurun. Üzerine yumurtayı kırın ve hafif karıştırarak pişirin.",
+      "2-4": "<strong>Malzemeler:</strong> 4-5 domates, 4 yumurta, 2 biber, 2 yemek kaşığı zeytinyağı.<br><strong>Yapılışı:</strong> Domates ve biberleri doğrayıp geniş tavada kavurun. Yumurtaları üzerine kırın, tercihe göre karıştırın.",
+      "4-6": "<strong>Malzemeler:</strong> 6-7 domates, 6 yumurta, 3-4 biber, 3 yemek kaşığı zeytinyağı.<br><strong>Yapılışı:</strong> Malzemeleri doğrayıp geniş tavada soteleyin. Yumurtaları bütün olarak kırın, üzerini kapatıp pişirin.",
+      "6+": "<strong>Malzemeler:</strong> 8+ domates, 8+ yumurta, bol biber, 4-5 yemek kaşığı zeytinyağı.<br><strong>Yapılışı:</strong> Büyük tencerede kavurun, yumurtaları tek tek kırın ve karıştırmadan pişirin."
+    },
+    "Karnıyarık": {
+      "1": "<strong>Malzemeler:</strong> 1 patlıcan, 100g kıyma, 1/2 soğan, 1 yemek kaşığı salça, 1 diş sarımsak, zeytinyağı.<br><strong>Yapılışı:</strong> Patlıcanı közleyin. Kıymayı soğan ve sarımsakla kavurup patlıcanın içine doldurun. Fırında 15 dk pişirin.",
+      "2-4": "<strong>Malzemeler:</strong> 3 patlıcan, 250g kıyma, 1 soğan, 2 yemek kaşığı salça, 2 diş sarımsak, zeytinyağı.<br><strong>Yapılışı:</strong> Patlıcanları közleyin. İç harcı hazırlayıp doldurun. Fırında 180°C’de 20 dk pişirin.",
+      "4-6": "<strong>Malzemeler:</strong> 5 patlıcan, 400g kıyma, 1.5 soğan, 2-3 yemek kaşığı salça, zeytinyağı.<br><strong>Yapılışı:</strong> Kıymalı harcı kavurun. Patlıcanlara yerleştirin. Üzerine salçalı sos döküp pişirin.",
+      "6+": "<strong>Malzemeler:</strong> 6-8 patlıcan, 500g+ kıyma, 2 soğan, 3-4 yemek kaşığı salça, zeytinyağı.<br><strong>Yapılışı:</strong> Tüm malzemeleri geniş tencerede hazırlayıp fırın kabına dizin. Üzerini domates dilimleriyle süsleyip pişirin."
+    },
+    "Ispanak Yemeği": {
+      "1": "<strong>Malzemeler:</strong> 200g ıspanak, 1 küçük soğan, 1 yemek kaşığı pirinç, zeytinyağı.<br><strong>Yapılışı:</strong> Soğanı kavur, ıspanağı ve pirinci ekleyip 1 bardak suyla pişir.",
+      "2-4": "<strong>Malzemeler:</strong> 500g ıspanak, 1 orta boy soğan, 2 yemek kaşığı pirinç, zeytinyağı.<br><strong>Yapılışı:</strong> Soğanları kavurun, ıspanak ve pirinci ekleyip orta ateşte 15 dakika pişirin.",
+      "4-6": "<strong>Malzemeler:</strong> 700g ıspanak, 2 soğan, 3 yemek kaşığı pirinç, zeytinyağı.<br><strong>Yapılışı:</strong> Geniş tencerede tüm malzemeleri kavurun. Yarım çay bardağı su ekleyerek pişirin.",
+      "6+": "<strong>Malzemeler:</strong> 1kg+ ıspanak, 2 büyük soğan, 4 yemek kaşığı pirinç, zeytinyağı.<br><strong>Yapılışı:</strong> Malzemeleri kalabalık sofralar için bolca kavurun. Üzerine limon sıkılabilir."
+    }
+  };
+
+  let secilenYemek = "";
+  let disardanMi = false;
+
+  function eliminLezzeti() {
+    secilenYemek = yemeklerEv[Math.floor(Math.random() * yemeklerEv.length)];
+    disardanMi = false;
+    document.getElementById("kisiSayisiInput").style.display = "block";
+  }
+
+  function disaridanSoyle() {
+    secilenYemek = yemeklerDis[Math.floor(Math.random() * yemeklerDis.length)];
+    disardanMi = true;
+    document.getElementById("kisiSayisiInput").style.display = "block";
+  }
+
+  function sonKararVer() {
+    const kisiSecimi = document.getElementById("kisiSecimi").value;
+    const mesaj = disardanMi
+      ? `Kendini yorma! Bugün ${secilenYemek} söyleyebilirsin. (${kisiSecimi} kişilik)`
+      : `Hadi mutfağa! Bugün ${secilenYemek} yapabilirsin. (${kisiSecimi} kişilik)`;
+    document.getElementById("onerilenYemek").innerText = mesaj;
+    document.getElementById("tarifLink").innerHTML =
+      disardanMi ? "" : tarifMetinleri[secilenYemek]?.[kisiSecimi] || "Tarif bilgisi yakında eklenecek.";
+  }
+</script>
+
+</body>
+</html>
