@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nomlyy.app</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffb347, #ffcc33);
+      color: #802000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      box-sizing: border-box;
+    }
+    .logo {
+      height: 40px;
+      background-color: white;
+      border-radius: 5px;
+      padding: 3px;
+    }
+    .site-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    h1 {
+      font-size: 2rem;
+      margin: 0.5rem 0;
+    }
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    #kisiSayisiInput {
+      margin-top: 1rem;
+      display: none;
+    }
+    select {
+      padding: 10px;
+      font-size: 1rem;
+      width: 320px;
+      max-width: 90%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    #sonKararButton {
+      margin-top: 1rem;
+      display: none;
+    }
+    button {
+      background-color: #a33;
+      color: white;
+      padding: 15px 30px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #802000;
+    }
+    #onerilenYemek {
+      margin-top: 2rem;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    #tarifLink {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      max-width: 600px;
+    }
+    footer {
+      position: absolute;
+      bottom: 20px;
+      display: flex;
+      gap: 20px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="site-title">nomlyy</div>
+    <img class="logo" src="logo.png" alt="Nomlyy Logo" />
+  </header>
+  <main>
+    <h1>Bugün Ne Yesem? Sorusunun En Hızlı Cevabı</h1>
+    <p>Üstelik tüm öneri ve tariflerle :)</p>
+    <div class="button-container">
+      <button onclick="eliminLezzeti()">Elimin lezzetiyle bir şeyler yapmak istiyorum!</button>
+      <button onclick="disaridanSoyle()">Bugün miskinim, dışarıdan söylesem iyi olur!</button>
+    </div>
+    <div id="kisiSayisiInput">
+      <p>Bu yemeği kaç şanslı kişiye yapacaksın?</p>
+      <select id="kisiSecimi">
+        <option value="1">Yalnız ve gururlu (Tek kişilik dev kadro)</option>
+        <option value="2-4">Bizimkiler geldi (2-4 kişilik)</option>
+        <option value="4-6">Maaile (Yengem/Görümcem de var) (4-6 kişilik)</option>
+        <option value="6+">İnsan ağırlamayı severim! (6+)</option>
+      </select>
+      <button id="sonKararButton" onclick="sonKararVer()">Son kararım!</button>
+    </div>
+    <div id="onerilenYemek"></div>
+    <div id="tarifLink"></div>
+  </main>
+  <footer>
+    <span>Hakkında</span>
+    <span>İletişim</span>
+    <span>Sosyal medya</span>
+  </footer>
+  <script>
+    const yemeklerEv = ["Menemen", "Karnıyarık", "Fırında Tavuk", "Mercimek Çorbası", "Sebzeli Bulgur Pilavı", "Mantar Sote", "Ispanak Yemeği"];
+    const yemeklerDis = ["Lahmacun", "Pizza", "Burger", "Sushi", "Tavuk Döner", "Kızarmış Tavuk"];
+    const tarifMetinleri = {
+      "Menemen": {
+        "1": "<strong>Malzemeler:</strong> 2 domates, 2 yumurta, 1 biber, zeytinyağı.<br><strong>Yapılışı:</strong> Domates ve biberi kavur, yumurtayı kır ve pişir.",
+        "2-4": "<strong>Malzemeler:</strong> 4-5 domates, 4 yumurta, 2 biber, zeytinyağı.<br><strong>Yapılışı:</strong> Domates ve biberi kavur, yumurtaları kır ve pişir.",
+        "4-6": "<strong>Malzemeler:</strong> 6-7 domates, 6 yumurta, 3-4 biber, zeytinyağı.<br><strong>Yapılışı:</strong> Geniş tavada pişirin, baharatla zenginleştirin.",
+        "6+": "<strong>Malzemeler:</strong> 8+ domates, 8+ yumurta, bol biber, zeytinyağı.<br><strong>Yapılışı:</strong> Kalabalık sofralara uygun şekilde pişirin."
+      },
+      "Karnıyarık": {
+        "1": "<strong>Malzemeler:</strong> 1 patlıcan, 100g kıyma, 1/2 soğan, salça.",
+        "2-4": "<strong>Malzemeler:</strong> 3 patlıcan, 250g kıyma, 1 soğan, salça.",
+        "4-6": "<strong>Malzemeler:</strong> 5 patlıcan, 400g kıyma, 1.5 soğan, salça.",
+        "6+": "<strong>Malzemeler:</strong> 6-8 patlıcan, 500g+ kıyma, 2 soğan, salça."
+      },
+      "Ispanak Yemeği": {
+        "1": "<strong>Malzemeler:</strong> 200g ıspanak, 1 küçük soğan, 1 yemek kaşığı pirinç, zeytinyağı.<br><strong>Yapılışı:</strong> Soğanı kavur, ıspanağı ve pirinci ekleyip pişir.",
+        "2-4": "<strong>Malzemeler:</strong> 500g ıspanak, 1 orta boy soğan, 2 yemek kaşığı pirinç, zeytinyağı.<br><strong>Yapılışı:</strong> Geniş tencerede kavurarak pişir.",
+        "4-6": "<strong>Malzemeler:</strong> 700g ıspanak, 2 soğan, 3 yemek kaşığı pirinç, zeytinyağı.<br><strong>Yapılışı:</strong> Ispanağı bolca kavur, pirinçle haşlayarak pişir.",
+        "6+": "<strong>Malzemeler:</strong> 1kg+ ıspanak, 2 büyük soğan, 4 yemek kaşığı pirinç, zeytinyağı.<br><strong>Yapılışı:</strong> Kalabalık tencere, bol lezzet."
+      }
+    };
+    let secilenYemek = "";
+    let disardanMi = false;
+    function eliminLezzeti() {
+      secilenYemek = yemeklerEv[Math.floor(Math.random() * yemeklerEv.length)];
+      disardanMi = false;
+      document.getElementById("kisiSayisiInput").style.display = "block";
+      document.getElementById("sonKararButton").style.display = "inline-block";
+    }
+    function disaridanSoyle() {
+      secilenYemek = yemeklerDis[Math.floor(Math.random() * yemeklerDis.length)];
+      disardanMi = true;
+      document.getElementById("kisiSayisiInput").style.display = "block";
+      document.getElementById("sonKararButton").style.display = "inline-block";
+    }
+    function sonKararVer() {
+      const kisiSecimi = document.getElementById("kisiSecimi").value;
+      const mesaj = disardanMi
+        ? `Kendini yorma! Bugün ${secilenYemek} söyleyebilirsin. (${kisiSecimi} kişilik)`
+        : `Hadi mutfağa! Bugün ${secilenYemek} yapabilirsin. (${kisiSecimi} kişilik)`;
+      document.getElementById("onerilenYemek").innerText = mesaj;
+      let tarif = "Tarif bilgisi yakında eklenecek.";
+      if (!disardanMi && tarifMetinleri[secilenYemek]) {
+        tarif = tarifMetinleri[secilenYemek][kisiSecimi] || tarif;
+      }
+      document.getElementById("tarifLink").innerHTML = disardanMi ? "" : tarif;
+    }
+  </script>
+</body>
+</html>
